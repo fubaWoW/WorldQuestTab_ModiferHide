@@ -1,0 +1,14 @@
+## Interface: 110200
+## Title: WorldQuestTab: Modifier Hide by |cff0080fffuba's|r
+## Notes: Hide WorldQuestTab Pins while holding a configurable modifier key (ALT/SHIFT/CTRL)
+## Author: fuba
+## Version: @project-version@
+## Dependencies: WorldQuestTab
+## SavedVariables: WQTModHideDB
+## IconTexture: Interface\AddOns\WorldQuestTab_ModiferHide\fubaLogo
+## X-Category: fuba
+
+## X-Curse-Project-ID: 1328164
+
+Core.lua
+Settings.lua

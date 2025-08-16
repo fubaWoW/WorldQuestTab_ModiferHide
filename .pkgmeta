@@ -1,0 +1,13 @@
+ignore:
+  - README.md
+  - CHANGES.txt
+  - LICENSE.md
+  - preview.png
+  - .pkgmeta
+  - .github
+  - .gitignore
+  - .gitattributes
+
+license-output: LICENSE.txt
+
+enable-nolib-creation: no
