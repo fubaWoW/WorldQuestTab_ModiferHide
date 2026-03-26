@@ -53,7 +53,7 @@ local function SetupHooks()
 
         hooksecurefunc(_G.WQT_PinMixin, "UpdatePlacement", function(pin)
             if IsConfiguredModDown() then
-                pin:Hide()
+				pin:SetShown(not IsConfiguredModDown())
             end
         end)
     end
@@ -93,7 +93,7 @@ SlashCmdList.WQTMODHIDE = function(msg)
 end
 
 -- Events
-eventFrame:SetScript("OnEvent", function(_, event, arg1)
+eventFrame:SetScript("OnEvent", function(_, event, ...)
     if event == "PLAYER_LOGIN" then
 
         GetConfiguredMod()
@@ -104,23 +104,29 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1)
 
     elseif event == "MODIFIER_STATE_CHANGED" then
 
-		local key = arg1
-        local configured = GetConfiguredMod()
-        local modKey =
-            (configured == "ALT"   and (key == "LALT"   or key == "RALT")) or
-            (configured == "SHIFT" and (key == "LSHIFT" or key == "RSHIFT")) or
-            (configured == "CTRL"  and (key == "LCTRL"  or key == "RCTRL"))
+		local key, state = ...
+		local isDown = state == 1
+		local configured = GetConfiguredMod()
 
-        if modKey then
-            ApplyVisibility()
-        end
+		local modKey =
+			(configured == "ALT"   and (key == "LALT"   or key == "RALT")) or
+			(configured == "SHIFT" and (key == "LSHIFT" or key == "RSHIFT")) or
+			(configured == "CTRL"  and (key == "LCTRL"  or key == "RCTRL"))
+
+		if modKey then
+			if WorldMapFrame and WorldMapFrame:IsShown() then
+				WorldMapFrame:RefreshAllDataProviders()
+			end
+
+			C_Timer.After(0, ApplyVisibility)
+		end
 
     elseif event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
         ApplyVisibility()
 
     elseif event == "CVAR_UPDATE" then
 
-		local value = arg1
+		local value = ...
         if value == "questPOI" then
             C_Timer.After(0.1, ApplyVisibility)
         end
