@@ -45,7 +45,24 @@ end
 -- tell active pins from pooled/inactive ones without needing the pool.
 
 local knownPins = setmetatable({}, { __mode = "k" })
+local placementHooks = setmetatable({}, { __mode = "k" })
 local pendingApply = false
+
+-- WorldQuestTab's UpdatePlacement() recalculates alpha and calls SetShown().
+-- Re-apply the modifier rule after that method finishes, rather than relying
+-- only on the PinInitialized callback or a generic OnShow hook.
+local function TrackPin(pin)
+    knownPins[pin] = true
+
+    if not placementHooks[pin] and type(pin.UpdatePlacement) == "function" then
+        placementHooks[pin] = true
+        hooksecurefunc(pin, "UpdatePlacement", function(updatedPin)
+            if updatedPin.questID and IsConfiguredModDown() then
+                updatedPin:Hide()
+            end
+        end)
+    end
+end
 
 local function ApplyVisibility()
     pendingApply = false
@@ -100,7 +117,7 @@ local function SetupHooks()
     end
 
     registry:RegisterCallback("WQT.MapPinProvider.PinInitialized", function(_, pin)
-        knownPins[pin] = true
+        TrackPin(pin)
         RequestApplyVisibility()
     end, eventFrame)
 
